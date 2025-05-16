@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎃 Dracula Secret AI Toolkit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #f8f8f2;
+      font-family: 'Fira Code', monospace;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      color: #bd93f9;
+    }
+    button {
+      background-color: #ff79c6;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      background-color: #282a36;
+      color: #f8f8f2;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    #report {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧛‍♂️ Dracula Secret AI Scanner</h1>
+    <p>Supercharged with AI to automatically detect, explain, and escalate potential secret exposures.</p>
+    <button onclick="runScan()">Run Enhanced AI Scan</button>
+    <div id="report"></div>
+    <textarea id="logs" placeholder="Logs will appear here..."></textarea>
+  </div>
+
+  <script>
+    async function runScan() {
+      const report = document.getElementById('report');
+      const logs = document.getElementById('logs');
+      logs.value = 'Scanning page...';
+
+      // Collect page content
+      const content = document.body.innerText;
+      const patterns = [
+        /access[_-]?token["']?\s*[:=]\s*["']?[a-z0-9\-_]{20,}/ig,
+        /aws[_-]?secret[_-]?access[_-]?key["']?\s*[:=]\s*["']?[a-z0-9\/+]{40,}/ig,
+        /api[_-]?key["']?\s*[:=]\s*["']?[a-z0-9\-_]{20,}/ig,
+      ];
+
+      let foundSecrets = [];
+      for (let pattern of patterns) {
+        const matches = content.match(pattern);
+        if (matches) foundSecrets.push(...matches);
+      }
+
+      logs.value = foundSecrets.length
+        ? `Secrets found:\n${foundSecrets.join('\n')}`
+        : 'No secrets detected.';
+
+      report.innerHTML = '<h2>AI Analysis:</h2>';
+
+      if (foundSecrets.length > 0) {
+        const explanation = await fetch(`https://api.openai.com/v1/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer YOUR_OPENAI_API_KEY',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              { role: "system", content: "You are a security analyst." },
+              { role: "user", content: `Explain the risk of these secrets: ${foundSecrets.join(', ')}` }
+            ]
+          })
+        });
+
+        const result = await explanation.json();
+        report.innerHTML += `<pre>${result.choices[0].message.content}</pre>`;
+      } else {
+        report.innerHTML += '<p>No secrets found. All is well 🌕</p>';
+      }
+    }
+  </script>
+</body>
+</html>
