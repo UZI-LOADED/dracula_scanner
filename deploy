@@ -1,0 +1,18 @@
+ The Dracula AI Secret Scanner Toolkit is now live in our editing space. It includes:
+
+A dark-themed HTML interface
+
+One-click secret scan button
+
+AI-enhanced analysis with OpenAI (customizable with your API key)
+
+Log viewer and report section
+
+Ready for browser bookmarklet or standalone deployment
+
+✅ Deployment Instructions:
+Local Test:
+
+Save the HTML file as dracula_scanner.html.
+
+Open it in your browser to test locally.
